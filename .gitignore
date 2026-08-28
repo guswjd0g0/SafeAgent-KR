@@ -1,0 +1,99 @@
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+pip-wheel-metadata/
+
+# ============================================================
+# 가상환경
+# ============================================================
+.venv/
+venv/
+env/
+ENV/
+.conda/
+
+# ============================================================
+# IDE / Editor
+# ============================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# Jupyter
+# ============================================================
+.ipynb_checkpoints/
+*.ipynb
+
+# ============================================================
+# 모델 캐시 — 용량이 크므로 Git에 포함하지 않음
+# HuggingFace 모델은 로컬에서 자동 다운로드됨
+# ============================================================
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+models/
+model_cache/
+
+# ============================================================
+# 환경변수 / 시크릿
+# ============================================================
+.env
+.env.*
+*.key
+secrets.json
+
+# ============================================================
+# 데이터 — 원본 PDF 및 대용량 파일
+# ============================================================
+data/documents/*.pdf
+data/images/
+
+# 청킹 결과물 (재생성 가능 — embed_bge_m3.py로 재구축)
+data/processed/
+
+# 평가 중간 결과물 (queriesV3.json과 rag_eval_results.json은 포함)
+data/evaluation/search_results.json
+data/evaluation/search_resultsV2.json
+data/evaluation/search_resultsV3.json
+data/evaluation/search_results_dense.json
+data/evaluation/search_results_filter.json
+data/evaluation/search_results_hybrid.json
+data/evaluation/search_results_reranker.json
+data/evaluation/bge_search_results_dense.json
+data/evaluation/bge_search_results_filter.json
+data/evaluation/bge_search_results_hybrid.json
+data/evaluation/bge_search_results_reranker.json
+data/evaluation/v3_bge_search_results_dense.json
+data/evaluation/v3_bge_search_results_filter.json
+data/evaluation/v3_bge_search_results_hybrid.json
+data/evaluation/v3_bge_search_results_reranker.json
+data/evaluation/legal_queries.json
+data/evaluation/legal_queriesV2.json
+
+# ============================================================
+# 로그
+# ============================================================
+*.log
+logs/
+
+# ============================================================
+# OS
+# ============================================================
+.DS_Store
+desktop.ini
