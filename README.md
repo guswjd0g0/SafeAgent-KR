@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚖️ SafeAgent
+# SafeAgent
 
 **노동법 전문 RAG 기반 AI 보조원**
 
@@ -18,7 +18,7 @@
 
 ---
 
-## 📌 프로젝트 소개
+## 프로젝트 소개
 
 SafeAgent는 대한민국 노동법 4개 법률을 대상으로 **RAG(Retrieval-Augmented Generation)** 기반으로 동작하는 AI 법률 보조원입니다.
 
@@ -27,106 +27,106 @@ SafeAgent는 대한민국 노동법 4개 법률을 대상으로 **RAG(Retrieval-
 - 답변에 반드시 법률명과 조문 번호를 명시
 - 모든 추론은 **로컬 환경에서 완전히 실행** (인터넷 연결 불필요)
 
-> 💡 외부 API 없이 Ollama + Qdrant + SentenceTransformer로 완전 로컬 동작
+> 외부 API 없이 Ollama + Qdrant + SentenceTransformer로 완전 로컬 동작
 
 ---
 
-## 🏗️ 시스템 구조
+## 시스템 구조
 
 ```
 사용자 질문
-    │
-    ▼
+    |
+    v
 bge-m3 임베딩 (BAAI/bge-m3, 1024-dim)
-    │
-    ▼
+    |
+    v
 Qdrant Dense Search + Law Filter
-    │
-    ├─ Dense-only → Top-5 조문
-    │
-    └─ Reranker 모드 → Top-20 후보
-                           │
-                       Cross-Encoder (BAAI/bge-reranker-base)
-                           │
-                       Top-5 재정렬
-    │
-    ▼
+    |
+    +-- Dense-only --> Top-5 조문
+    |
+    +-- Reranker 모드 --> Top-20 후보
+                            |
+                        Cross-Encoder (BAAI/bge-reranker-base)
+                            |
+                        Top-5 재정렬
+    |
+    v
 Context 구성 ([순번] 법률명 조문번호 \n 본문)
-    │
-    ▼
+    |
+    v
 Prompt 구성 (조문 근거 답변 원칙 적용)
-    │
-    ▼
+    |
+    v
 LLM 호출 (gemma3:4b via Ollama)
-    │
-    ▼
+    |
+    v
 답변 + 출처 반환
 ```
 
 ---
 
-## 📊 평가 결과 (Dense-only 기준선)
+## 평가 결과 (Dense-only 기준선)
 
-> 평가셋: 4개 법률 × 각 5개 = 20개 질문 | 모델: gemma3:4b | 임베딩: BAAI/bge-m3
+> 평가셋: 4개 법률 x 각 5개 = 20개 질문 | 모델: gemma3:4b | 임베딩: BAAI/bge-m3
 
 | 지표 | 결과 |
 |---|---|
-| 🎯 검색 히트 (Top-5) | **18 / 20 (90.0%)** |
-| 🥇 검색 순위 Top-1 | **16 / 20 (80.0%)** |
-| 📎 출처 포함 답변 | **20 / 20 (100.0%)** |
-| ⚠️ Hallucination 의심 | 2 / 20 (10.0%) — False Positive 추정 |
-| ⏱️ 평균 검색 시간 | 0.14초 |
-| 🤖 평균 LLM 응답 시간 | 14.84초 (CPU 환경) |
+| 검색 히트 (Top-5) | **18 / 20 (90.0%)** |
+| 검색 순위 Top-1 | **16 / 20 (80.0%)** |
+| 출처 포함 답변 | **20 / 20 (100.0%)** |
+| Hallucination 의심 | 2 / 20 (10.0%) — False Positive 추정 |
+| 평균 검색 시간 | 0.14초 |
+| 평균 LLM 응답 시간 | 14.84초 (CPU 환경) |
 
 > Reranker 통합 후 비교 평가 진행 중 (`python evaluate_rag.py --mode both`)
 
 ---
 
-## 🗂️ 프로젝트 구조
+## 프로젝트 구조
 
 ```
 SafeAgent/
 ├── app/
 │   └── rag/
-│       ├── rag_pipeline.py      # 핵심 — 전체 RAG 파이프라인 (단일 파일)
-│       ├── evaluate_rag.py      # 20개 질문 자동 평가 (Dense / Reranker / 비교)
-│       ├── embed_bge_m3.py      # bge-m3 임베딩 → Qdrant 저장
-│       ├── hybrid_search.py     # Hybrid Search (BM25 + Dense + RRF)
-│       ├── reranker.py          # Cross-Encoder Reranker (독립 실험용)
-│       └── ingestion.py         # PDF 파싱 및 조문 단위 청킹
+│       ├── rag_pipeline.py       # 핵심 — 전체 RAG 파이프라인 (단일 파일)
+│       ├── evaluate_rag.py       # 20개 질문 자동 평가 (Dense / Reranker / 비교)
+│       ├── embed_bge_m3.py       # bge-m3 임베딩 -> Qdrant 저장
+│       ├── hybrid_search.py      # Hybrid Search (BM25 + Dense + RRF)
+│       ├── reranker.py           # Cross-Encoder Reranker (독립 실험용)
+│       └── ingestion.py          # PDF 파싱 및 조문 단위 청킹
 ├── frontend/
-│   └── app.py                   # Streamlit UI
+│   └── app.py                    # Streamlit UI
 ├── backend/
-│   └── main.py                  # FastAPI (확장 예정)
+│   └── main.py                   # FastAPI (확장 예정)
 ├── data/
-│   ├── documents/               # 원본 법률 PDF (gitignore)
-│   ├── processed/               # 청킹 결과 JSON
+│   ├── documents/                # 원본 법률 PDF (gitignore)
+│   ├── processed/                # 청킹 결과 JSON (gitignore)
 │   └── evaluation/
-│       ├── legal_queriesV3.json     # 평가 질문 20개
-│       └── rag_eval_results.json    # 평가 결과
+│       ├── legal_queriesV3.json  # 평가 질문 20개
+│       └── rag_eval_results.json # 평가 결과
 ├── .gitignore
-├── ISSUES.md                    # 개선 사항 추적
-├── error_log.md                 # 에러 로그 및 해결 과정
+├── ISSUES.md                     # 개선 사항 추적
+├── error_log.md                  # 에러 로그 및 해결 과정
 └── README.md
 ```
 
 ---
 
-## ⚙️ 기술 스택
+## 기술 스택
 
 | 구성 요소 | 선택 | 비고 |
 |---|---|---|
-| 임베딩 모델 | `BAAI/bge-m3` | 다국어, 1024-dim |
-| Reranker | `BAAI/bge-reranker-base` | Cross-Encoder |
+| 임베딩 모델 | BAAI/bge-m3 | 다국어, 1024-dim |
+| Reranker | BAAI/bge-reranker-base | Cross-Encoder |
 | 벡터 DB | Qdrant | 로컬 Docker |
-| LLM | `gemma3:4b` | Ollama 로컬 추론 |
+| LLM | gemma3:4b | Ollama 로컬 추론 |
 | UI | Streamlit 1.62 | |
 | 백엔드 | FastAPI | 확장 예정 |
-| 언어 | Python 3.11 | Conda `safeagent` 환경 |
+| 언어 | Python 3.11 | Conda safeagent 환경 |
 
 ---
 
-## 📚 법률 데이터
+## 법률 데이터
 
 | 법률명 | 법률 번호 | 시행일 | 청크 수 |
 |---|---|---|---|
@@ -138,7 +138,7 @@ SafeAgent/
 
 ---
 
-## 🚀 실행 방법
+## 실행 방법
 
 ### 1. 환경 준비
 
@@ -195,7 +195,7 @@ python evaluate_rag.py --mode both
 
 ---
 
-## 🔍 사용 예시
+## 사용 예시
 
 ```python
 from rag_pipeline import init_pipeline, run_rag
@@ -223,11 +223,11 @@ print(result["sources"])
 
 ---
 
-## 💬 프롬프트 설계 원칙
+## 프롬프트 설계 원칙
 
 ```
 1. 제공된 [법률 조문]에 명시된 내용만 근거로 사용
-2. 조문에 없는 내용은 추측·생성 금지
+2. 조문에 없는 내용은 추측, 생성 금지
 3. 답변 불가 시 "제공된 조문에서 해당 내용을 확인할 수 없습니다" 명시
 4. 답변 마지막에 법률명 + 조문번호 반드시 명시
 5. Context와 사용자 질문을 명확히 구분
@@ -235,11 +235,11 @@ print(result["sources"])
 
 ---
 
-## 🗺️ 로드맵
+## 로드맵
 
 - [x] bge-m3 임베딩 + Qdrant 구축 (514 chunks)
 - [x] Dense Search + Law Filter
-- [x] RAG 파이프라인 (검색 → Context → LLM)
+- [x] RAG 파이프라인 (검색 -> Context -> LLM)
 - [x] 20개 질문 자동 평가
 - [x] Reranker (Cross-Encoder) 통합
 - [ ] Dense vs Reranker 비교 평가
@@ -250,7 +250,7 @@ print(result["sources"])
 
 ---
 
-## 📄 라이선스
+## 라이선스
 
 MIT License
 
