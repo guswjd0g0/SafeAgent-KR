@@ -17,7 +17,7 @@
 </div>
 
 ---
-!image.png
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/8da6641d-1ff4-4a0b-b38f-ccf1a49a6590" />
 
 ## 프로젝트 소개
 
